@@ -1,0 +1,292 @@
+ecommerce-electronics/
+├── .env.example
+├── .gitignore
+├── README.md
+├── package.json
+├── pnpm-workspace.yaml
+├── turbo.json
+│
+├── apps/
+│   ├── web/                                  # Next.js — Customer Storefront
+│   │   ├── app/
+│   │   │   ├── (auth)/
+│   │   │   │   ├── login/page.tsx
+│   │   │   │   ├── register/page.tsx
+│   │   │   │   ├── verify-otp/page.tsx
+│   │   │   │   └── layout.tsx
+│   │   │   ├── (store)/
+│   │   │   │   ├── page.tsx                  # Home hero, banners & featured tech
+│   │   │   │   ├── products/
+│   │   │   │   │   ├── page.tsx              # Catalog search & parametric filters
+│   │   │   │   │   └── [slug]/page.tsx       # PDP: Specs table, gallery, variants
+│   │   │   │   ├── categories/[category]/page.tsx
+│   │   │   │   ├── cart/page.tsx
+│   │   │   │   ├── checkout/
+│   │   │   │   │   ├── page.tsx              # Gateway selector & shipping form
+│   │   │   │   │   └── success/page.tsx      # Order receipt & confirmation
+│   │   │   │   ├── account/
+│   │   │   │   │   ├── page.tsx
+│   │   │   │   │   ├── orders/
+│   │   │   │   │   │   ├── page.tsx          # Order history
+│   │   │   │   │   │   └── [orderId]/page.tsx
+│   │   │   │   │   └── wishlist/page.tsx
+│   │   │   │   └── layout.tsx
+│   │   │   ├── api/revalidate/route.ts       # On-demand ISR revalidation hook
+│   │   │   ├── globals.css
+│   │   │   ├── providers.tsx
+│   │   │   └── layout.tsx
+│   │   ├── components/
+│   │   │   ├── layout/
+│   │   │   │   ├── navbar.tsx
+│   │   │   │   ├── footer.tsx
+│   │   │   │   ├── category-bar.tsx
+│   │   │   │   └── mobile-menu.tsx
+│   │   │   ├── product/
+│   │   │   │   ├── product-card.tsx
+│   │   │   │   ├── product-grid.tsx
+│   │   │   │   ├── image-gallery.tsx
+│   │   │   │   ├── spec-table.tsx
+│   │   │   │   ├── variant-selector.tsx
+│   │   │   │   └── filter-sidebar.tsx
+│   │   │   ├── cart/
+│   │   │   │   ├── cart-drawer.tsx
+│   │   │   │   ├── cart-item.tsx
+│   │   │   │   └── order-summary.tsx
+│   │   │   └── checkout/
+│   │   │       ├── payment-selector.tsx
+│   │   │       ├── khalti-button.tsx
+│   │   │       ├── esewa-form.tsx
+│   │   │       └── shipping-form.tsx
+│   │   ├── lib/
+│   │   │   ├── api/
+│   │   │   │   ├── core-client.ts            # Fetch client for Django API
+│   │   │   │   └── search-client.ts          # Fetch client for FastAPI Search
+│   │   │   ├── hooks/
+│   │   │   │   ├── use-cart.ts
+│   │   │   │   ├── use-auth.ts
+│   │   │   │   └── use-search.ts
+│   │   │   └── utils/
+│   │   │       ├── formatters.ts             # NPR/USD currency formatting
+│   │   │       └── constants.ts
+│   │   ├── public/
+│   │   │   ├── favicon.ico
+│   │   │   ├── images/
+│   │   │   └── payment-icons/                # Khalti, eSewa, Card logos
+│   │   ├── Dockerfile
+│   │   ├── next.config.mjs
+│   │   ├── package.json
+│   │   ├── postcss.config.js
+│   │   ├── tailwind.config.ts
+│   │   └── tsconfig.json
+│   │
+│   ├── admin-dashboard/                      # Next.js — Seller & Admin Portal
+│   │   ├── app/
+│   │   │   ├── (auth)/
+│   │   │   │   ├── login/page.tsx
+│   │   │   │   └── layout.tsx
+│   │   │   ├── (dashboard)/
+│   │   │   │   ├── page.tsx                  # Sales metrics & revenue charts
+│   │   │   │   ├── products/
+│   │   │   │   │   ├── page.tsx              # Seller inventory listings
+│   │   │   │   │   ├── new/page.tsx          # Create new tech product listing
+│   │   │   │   │   └── [id]/edit/page.tsx
+│   │   │   │   ├── inventory/page.tsx        # Stock adjustment & serial numbers
+│   │   │   │   ├── orders/
+│   │   │   │   │   ├── page.tsx              # Orders to fulfill
+│   │   │   │   │   └── [orderId]/page.tsx    # Shipping label & status update
+│   │   │   │   ├── payouts/page.tsx          # Seller earnings & withdrawal requests
+│   │   │   │   ├── analytics/page.tsx
+│   │   │   │   ├── settings/page.tsx
+│   │   │   │   └── layout.tsx
+│   │   │   ├── globals.css
+│   │   │   ├── providers.tsx
+│   │   │   └── layout.tsx
+│   │   ├── components/
+│   │   │   ├── layout/
+│   │   │   │   ├── sidebar.tsx
+│   │   │   │   ├── top-nav.tsx
+│   │   │   │   └── user-nav.tsx
+│   │   │   ├── products/
+│   │   │   │   ├── product-form.tsx
+│   │   │   │   ├── spec-builder.tsx          # Dynamic JSON spec editor
+│   │   │   │   ├── variant-matrix.tsx         # SKU generation tool
+│   │   │   │   └── media-uploader.tsx        # Direct-to-R2 image uploader
+│   │   │   ├── orders/
+│   │   │   │   ├── order-table.tsx
+│   │   │   │   ├── fulfillment-modal.tsx
+│   │   │   │   └── status-badge.tsx
+│   │   │   ├── payouts/
+│   │   │   │   ├── payout-table.tsx
+│   │   │   │   └── request-payout-modal.tsx
+│   │   │   └── analytics/
+│   │   │       ├── sales-chart.tsx
+│   │   │       └── revenue-card.tsx
+│   │   ├── lib/
+│   │   │   ├── api/admin-client.ts
+│   │   │   ├── hooks/
+│   │   │   │   ├── use-admin-auth.ts
+│   │   │   │   └── use-inventory.ts
+│   │   │   └── utils/
+│   │   │       ├── export-csv.ts
+│   │   │       └── formatters.ts
+│   │   ├── public/
+│   │   │   ├── favicon.ico
+│   │   │   └── logo.svg
+│   │   ├── Dockerfile
+│   │   ├── next.config.mjs
+│   │   ├── package.json
+│   │   ├── postcss.config.js
+│   │   ├── tailwind.config.ts
+│   │   └── tsconfig.json
+│   │
+│   ├── core/                                 # Django — Transactional Backend
+│   │   ├── manage.py
+│   │   ├── pyproject.toml
+│   │   ├── Dockerfile
+│   │   ├── core/
+│   │   │   ├── __init__.py
+│   │   │   ├── settings/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── base.py
+│   │   │   │   ├── local.py
+│   │   │   │   └── production.py
+│   │   │   ├── urls.py
+│   │   │   ├── asgi.py
+│   │   │   ├── wsgi.py
+│   │   │   └── celery.py                     # Celery broker & schedule config
+│   │   ├── accounts/
+│   │   │   ├── models.py                     # Custom User, SellerProfile, Address
+│   │   │   ├── views.py                      # Login, Register, OTP Verification
+│   │   │   ├── serializers.py
+│   │   │   ├── urls.py
+│   │   │   ├── admin.py
+│   │   │   ├── signals.py
+│   │   │   └── permissions.py               # IsSeller, IsCustomer, IsAdmin
+│   │   ├── catalog/
+│   │   │   ├── models.py                     # Product, ProductVariant, Category, Brand
+│   │   │   ├── views.py                      # Catalog CRUD & Admin endpoints
+│   │   │   ├── serializers.py
+│   │   │   ├── urls.py
+│   │   │   ├── admin.py
+│   │   │   └── services.py                   # Dynamic JSONB spec parsing logic
+│   │   ├── orders/
+│   │   │   ├── models.py                     # Cart, CartItem, Order, OrderItem
+│   │   │   ├── views.py                      # Checkout, Order tracking endpoints
+│   │   │   ├── serializers.py
+│   │   │   ├── urls.py
+│   │   │   ├── admin.py
+│   │   │   └── state_machine.py             # Order status transitions
+│   │   ├── payments/
+│   │   │   ├── models.py                     # PaymentTransaction, Refund
+│   │   │   ├── views.py                      # Webhooks & Gateway verification
+│   │   │   ├── serializers.py
+│   │   │   ├── urls.py
+│   │   │   ├── admin.py
+│   │   │   └── gateways/
+│   │   │       ├── khalti.py                 # Khalti v2 API client
+│   │   │       ├── esewa.py                  # eSewa v2 signature generator
+│   │   │       └── stripe.py                 # Stripe PaymentIntent handler
+│   │   ├── inventory/
+│   │   │   ├── models.py                     # InventoryReservation, SerialNumber
+│   │   │   ├── views.py
+│   │   │   ├── serializers.py
+│   │   │   ├── urls.py
+│   │   │   ├── admin.py
+│   │   │   └── locks.py                      # Stock reservation lock logic
+│   │   ├── media/
+│   │   │   ├── models.py                     # ProductImage (ID, URL, metadata)
+│   │   │   ├── views.py                      # Presigned upload URL generator
+│   │   │   ├── serializers.py
+│   │   │   ├── urls.py
+│   │   │   └── storage.py                    # Cloudflare R2 / S3 Boto3 wrapper
+│   │   └── notifications/
+│   │       ├── models.py                     # NotificationLog
+│   │       ├── dispatchers.py                # Publishes events to Redis queue
+│   │       └── events.py                     # Event definitions (order.created)
+│   │
+│   └── search/                               # FastAPI — Fast Read & Search API
+│       ├── main.py                           # App entrypoint & middleware
+│       ├── config.py                         # Environment variables & connection settings
+│       ├── pyproject.toml
+│       ├── Dockerfile
+│       ├── routers/
+│       │   ├── __init__.py
+│       │   ├── products.py                   # /api/v1/search & filtering endpoints
+│       │   ├── suggestions.py                # /api/v1/autocomplete endpoint
+│       │   └── health.py                     # Healthcheck endpoint
+│       ├── schemas/
+│       │   ├── __init__.py
+│       │   ├── product.py                    # Pydantic product search response model
+│       │   └── search_params.py              # Query, brand, spec filter schemas
+│       ├── services/
+│       │   ├── __init__.py
+│       │   └── meilisearch_client.py         # Async Meilisearch SDK client
+│       └── indexing/
+│           ├── __init__.py
+│           ├── sync_pipeline.py              # Incremental database index sync
+│           └── schema_definitions.py         # Meilisearch searchable & filterable attrs
+│
+├── packages/                                 # Shared Monorepo Code
+│   ├── ui/                                   # Shared Tailwind React Components
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── src/
+│   │       ├── button.tsx
+│   │       ├── input.tsx
+│   │       ├── dialog.tsx
+│   │       ├── badge.tsx
+│   │       ├── table.tsx
+│   │       └── index.ts                      # Barrel export file
+│   ├── types/                                # Shared TypeScript Definitions
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── src/
+│   │       ├── product.ts                    # Product, Variant, Spec types
+│   │       ├── order.ts                      # Order, Cart, Checkout types
+│   │       ├── user.ts                       # Auth, User, Seller types
+│   │       ├── payment.ts                    # Payment status & Gateway types
+│   │       ├── api.ts                        # Paginated API response formats
+│   │       └── index.ts
+│   └── config/                               # Shared Tooling Configurations
+│       ├── package.json
+│       ├── tailwind/
+│       │   └── tailwind.config.js
+│       ├── eslint/
+│       │   ├── base.js
+│       │   └── next.js
+│       └── typescript/
+│           └── base.json
+│
+├── workers/                                  # Asynchronous Background Service Workers
+│   ├── notifications/                        # Notification Fan-Out Queue Worker
+│   │   ├── worker.py                         # Celery/Redis event listener loop
+│   │   ├── pyproject.toml
+│   │   ├── Dockerfile
+│   │   ├── channels/
+│   │   │   ├── email.py                      # Resend / Brevo API integration
+│   │   │   ├── push.py                       # WebPush / FCM notifications
+│   │   │   └── whatsapp.py                   # Meta WhatsApp Cloud API runner
+│   │   └── templates/
+│   │       ├── order_confirmation.html
+│   │       ├── otp_email.html
+│   │       └── low_stock_alert.html
+│   │
+│   └── catalog-scraper/                      # Ingestion & Scraping Worker
+│       ├── scraper.py                        # Entrypoint script
+│       ├── pipeline.py                       # Ingests clean data into Django ORM
+│       ├── pyproject.toml
+│       ├── Dockerfile
+│       ├── spiders/
+│       │   ├── laptop_spider.py              # Laptop specs extractor
+│       │   └── gpu_spider.py                 # GPU specs extractor
+│       └── parsers/
+│           ├── spec_parser.py                # Raw text -> Clean JSON specs
+│           └── image_cleaner.py              # External image URL validator
+│
+└── infra/                                    # Local Development & DevOps Infrastructure
+    ├── docker-compose.yml                    # Postgres, Redis, Meilisearch, MinIO
+    ├── docker-compose.override.yml           # Volume mounts for hot-reload
+    └── nginx/
+        ├── nginx.conf                        # Main reverse proxy config
+        └── conf.d/
+            └── default.conf                  # Path router (/api/v1 -> core, /search -> search)
