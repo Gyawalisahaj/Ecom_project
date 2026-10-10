@@ -20,6 +20,9 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/v1/auth/', include('accounts.urls')),
     # Mount the catalog API under the v1 namespace
     path('api/v1/catalog/', include('catalog.urls')),
+    path('api/v1/media/', include('media.urls')),
+
 ]
