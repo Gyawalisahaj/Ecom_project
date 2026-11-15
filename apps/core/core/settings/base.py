@@ -46,7 +46,7 @@ INSTALLED_APPS = [
 
     # Your Local Apps
     'accounts',
-    'catalog',
+    'catalog.apps.CatalogConfig',
     'inventory',
     'media',
     'notifications',
