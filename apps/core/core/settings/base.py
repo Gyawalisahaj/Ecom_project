@@ -10,6 +10,15 @@ SECRET_KEY = os.environ.get(
     'django-insecure-change-this-in-production',
 )
 
+MEILI_HOST = os.environ.get(
+    'MEILI_HOST',
+    'http://127.0.0.1:7700',
+)
+MEILI_MASTER_KEY = os.environ.get(
+    'MEILI_MASTER_KEY',
+    'your-dev-master-key',
+)
+
 DEBUG = False
 # core/settings/base.py
 
