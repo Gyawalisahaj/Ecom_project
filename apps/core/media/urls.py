@@ -1,5 +1,7 @@
+# apps/core/media/urls.py
 from django.urls import path
+from .views import PresignedURLView
 
 urlpatterns = [
-    # We will map the Cloudflare R2 upload view here later
+    path("upload-url/", PresignedURLView.as_view(), name="presigned_upload_url"),
 ]
