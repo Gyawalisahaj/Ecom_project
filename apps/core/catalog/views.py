@@ -2,6 +2,14 @@
 from rest_framework import viewsets
 from .models import Product
 from .serializers import ProductSerializer
+from rest_framework import generics
+from accounts.permissions import IsSeller
+from .serializers import SellerProductCreateSerializer
+
+
+class SellerProductCreateView(generics.CreateAPIView):
+    serializer_class = SellerProductCreateSerializer
+    permission_classes = [IsSeller]
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     """
