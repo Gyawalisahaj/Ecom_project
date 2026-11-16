@@ -1,13 +1,18 @@
-# media/views.py
+# apps/core/media/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated  # <-- Import this
+from accounts.permissions import IsSeller
 from .storage import generate_presigned_upload
 
 class PresignedURLView(APIView):
-    # Enforce that only users with a valid Bearer token can hit this view
-    permission_classes = [IsAuthenticated] 
-    
+    permission_classes = [IsSeller]
+
     def post(self, request):
-        # ... (keep all the existing code inside the post method exactly the same) ...
+        file_name = request.data.get("file_name")
+        file_type = request.data.get("file_type")
+        if not file_name or not file_type:
+            return Response({"error": "file_name and file_type are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        upload_data = generate_presigned_upload(file_name, file_type)
+        return Response(upload_data, status=status.HTTP_200_OK)
