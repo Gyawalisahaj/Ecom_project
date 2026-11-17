@@ -1,0 +1,66 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: buyit
+      POSTGRES_USER: buyit_user
+      POSTGRES_PASSWORD: buyit_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.12
+    environment:
+      MEILI_ENV: development
+      MEILI_MASTER_KEY: your-dev-master-key
+    ports:
+      - "7700:7700"
+    volumes:
+      - meili_data:/meili_data
+
+  core:
+    build: ./apps/core
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./apps/core:/app
+    environment:
+      MEILI_HOST: http://meilisearch:7700
+      MEILI_MASTER_KEY: your-dev-master-key
+      FRONTEND_BASE_URL: http://localhost:3000
+      KHALTI_SECRET_KEY: your-test-secret-key
+    depends_on:
+      - db
+      - meilisearch
+
+  search:
+    build: ./apps/search
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./apps/search:/app
+    environment:
+      MEILI_HOST: http://meilisearch:7700
+      MEILI_MASTER_KEY: your-dev-master-key
+    depends_on:
+      - meilisearch
+
+  web:
+    build: ./apps/web
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+    environment:
+      NEXT_PUBLIC_CORE_API_URL: http://127.0.0.1:8000/api/v1
+      NEXT_PUBLIC_SEARCH_API_URL: http://127.0.0.1:8001/api/v1
+    depends_on:
+      - core
+      - search
+
+volumes:
+  postgres_data:
+  meili_data:
