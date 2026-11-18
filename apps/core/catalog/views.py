@@ -25,4 +25,19 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         # by joining the database tables efficiently in a single query.
         return Product.objects.filter(is_active=True)\
             .select_related('category', 'brand')\
-            .prefetch_related('variants')
+            .prefetch_related('variants', 'images')\
+            .order_by('-created_at')
+
+
+
+class SellerProductManageView(generics.ListCreateAPIView):
+    serializer_class = SellerProductCreateSerializer
+    permission_classes = [IsSeller]
+
+    def get_queryset(self):
+        return Product.objects.all().select_related('brand', 'category').prefetch_related('variants', 'images').order_by('-created_at')
+
+class SellerProductDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = SellerProductCreateSerializer
+    permission_classes = [IsSeller]
