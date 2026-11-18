@@ -30,20 +30,29 @@ def search_products(
     limit: int = Query(20, ge=1, description="Max results to return"),
     offset: int = Query(0, ge=0, description="Pagination offset"),
 ) -> dict:
-    index = client.index("products")
-    results = index.search(
-        q,
-        {
-            "limit": limit,
-            "offset": offset,
-        },
-    )
+    try:
+        index = client.index("products")
+        results = index.search(
+            q,
+            {
+                "limit": limit,
+                "offset": offset,
+            },
+        )
 
-    return {
-        "query": q,
-        "hits": results["hits"],
-        "estimatedTotalHits": results.get(
-            "estimatedTotalHits", len(results["hits"])
-        ),
-        "processingTimeMs": results["processingTimeMs"],
-    }
+        return {
+            "query": q,
+            "hits": results["hits"],
+            "estimatedTotalHits": results.get(
+                "estimatedTotalHits", len(results["hits"])
+            ),
+            "processingTimeMs": results.get("processingTimeMs", 0),
+        }
+    except Exception as e:
+        return {
+            "query": q,
+            "hits": [],
+            "estimatedTotalHits": 0,
+            "processingTimeMs": 0,
+            "error": str(e),
+        }
