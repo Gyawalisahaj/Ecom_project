@@ -1,11 +1,11 @@
 // apps/web/src/app/payment/verify/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { verifyKhaltiPayment } from "@/lib/api";
 
-export default function PaymentVerifyPage() {
+function VerifyContent() {
   const searchParams = useSearchParams();
   const pidx = searchParams.get("pidx");
   const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
@@ -30,19 +30,35 @@ export default function PaymentVerifyPage() {
   }, [pidx]);
 
   return (
+    <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 text-center shadow-sm">
+      <h1 className="text-xl font-bold text-zinc-900">
+        {status === "verifying" ? "Processing Payment" : status === "success" ? "Payment Successful" : "Payment Failed"}
+      </h1>
+      <p className="mt-3 text-sm text-zinc-600">{message}</p>
+      <a
+        href="/orders"
+        className="mt-6 inline-block rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800"
+      >
+        View My Orders
+      </a>
+    </div>
+  );
+}
+
+export default function PaymentVerifyPage() {
+  return (
     <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
-      <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 text-center shadow-sm">
-        <h1 className="text-xl font-bold text-zinc-900">
-          {status === "verifying" ? "Processing Payment" : status === "success" ? "Payment Successful" : "Payment Failed"}
-        </h1>
-        <p className="mt-3 text-sm text-zinc-600">{message}</p>
-        <a
-          href="/orders"
-          className="mt-6 inline-block rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800"
-        >
-          View My Orders
-        </a>
-      </div>
+      <Suspense
+        fallback={
+          <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 text-center shadow-sm">
+            <h1 className="text-xl font-bold text-zinc-900">Processing Payment</h1>
+            <p className="mt-3 text-sm text-zinc-600">Verifying transaction...</p>
+          </div>
+        }
+      >
+        <VerifyContent />
+      </Suspense>
     </main>
   );
 }
+
