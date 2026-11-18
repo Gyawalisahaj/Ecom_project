@@ -7,10 +7,10 @@ import { addToCart } from "@/lib/api";
 
 export function ProductDetailClient({ product }: { product: Product }) {
   const router = useRouter();
-  const [selectedVariant, setSelectedVariant] = useState(product.variants[0] || null);
+  const [selectedVariant, setSelectedVariant] = useState(product.variants?.[0] || null);
   const [loading, setLoading] = useState(false);
 
-  const primaryImage = product.images.find((img) => img.is_primary) || product.images[0];
+  const primaryImage = product.images?.find((img) => img.is_primary) || product.images?.[0];
   const activePrice = selectedVariant?.price_override || product.base_price;
 
   async function handleAdd() {
