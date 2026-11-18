@@ -14,7 +14,7 @@ export function CatalogBrowser({ initialProducts }: { initialProducts: Product[]
 
   // Normalize initial Django products into CardItem format
   const defaultItems: CardItem[] = initialProducts.map((p) => {
-    const primaryImg = p.images.find((img) => img.is_primary) || p.images[0];
+    const primaryImg = p.images?.find((img) => img.is_primary) || p.images?.[0];
     return {
       id: p.id,
       name: p.name,
