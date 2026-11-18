@@ -14,6 +14,36 @@ from .serializers import OrderSerializer
 
 from rest_framework import generics
 
+class CartAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        serializer = CartSerializer(cart)
+        return Response(serializer.data)
+
+    def post(self, request):
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+
+        variant_id = request.data.get('variant_id')
+        quantity = int(request.data.get('quantity', 1))
+
+        if not variant_id:
+            return Response({"error": "variant_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        variant = get_object_or_404(ProductVariant, id=variant_id)
+
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, variant=variant)
+        if not created:
+            cart_item.quantity += quantity
+            cart_item.save()
+        else:
+            cart_item.quantity = quantity
+            cart_item.save()
+
+        serializer = CartSerializer(cart)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class CheckoutAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
