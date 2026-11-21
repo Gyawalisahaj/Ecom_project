@@ -13,8 +13,10 @@ function getAuthHeaders(): HeadersInit {
 }
 
 // --- Catalog & Search ---
-export async function getProducts(page = 1): Promise<PaginatedResponse<Product>> {
-  const res = await fetch(`${CORE_API}/catalog/products/?page=${page}`, { cache: "no-store" });
+export async function getProducts(page = 1, pageSize = 24, category?: string): Promise<PaginatedResponse<Product>> {
+  const params = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
+  if (category) params.append("category", category);
+  const res = await fetch(`${CORE_API}/catalog/products/?${params.toString()}`, { cache: "no-store" });
   if (!res.ok) throw new Error(`Catalog error: ${res.status}`);
   return res.json();
 }
@@ -39,7 +41,11 @@ export async function loginUser(email: string, password: string) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-  if (!res.ok) throw new Error("Invalid email or password");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => null);
+    const msg = errData?.detail || "Invalid email or password";
+    throw new Error(msg);
+  }
   const data = await res.json();
   localStorage.setItem("access_token", data.access);
   localStorage.setItem("refresh_token", data.refresh);
@@ -58,7 +64,16 @@ export async function registerUser(payload: {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error("Registration failed");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => null);
+    if (errData && typeof errData === "object") {
+      const messages = Object.entries(errData)
+        .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(", ") : msgs}`)
+        .join("; ");
+      throw new Error(messages || "Registration failed");
+    }
+    throw new Error("Registration failed");
+  }
   return res.json();
 }
 
@@ -147,4 +162,54 @@ export async function verifyKhaltiPayment(pidx: string) {
   });
   if (!res.ok) throw new Error("Khalti verification failed");
   return res.json();
+}
+// append to apps/web/src/lib/api.ts
+export interface RecommendedProduct {
+  id: string;
+  title: string;
+  model: string;
+  category: string;
+  price: string;
+  price_npr: number | null;
+  url: string;
+  thumbnail: string | null;
+  specifications: Record<string, string>;
+  scores: {
+    hybrid: number;
+    content: number;
+    collaborative: number;
+  };
+}
+
+export async function getRecommendations(
+  productIdOrTitle: string,
+  limit = 4
+): Promise<RecommendedProduct[]> {
+  const encoded = encodeURIComponent(productIdOrTitle);
+  const res = await fetch(`${SEARCH_API}/recommendations/${encoded}/?limit=${limit}`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.recommendations || [];
+}
+
+export async function logProductInteraction(
+  productId: string,
+  eventType: "view" | "cart" | "purchase"
+) {
+  if (typeof window === "undefined") return;
+  let sessionId = localStorage.getItem("buyit_session_id");
+  if (!sessionId) {
+    sessionId = crypto.randomUUID();
+    localStorage.setItem("buyit_session_id", sessionId);
+  }
+
+  await fetch(`${SEARCH_API}/recommendations/events/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      session_id: sessionId,
+      product_id: productId,
+      event_type: eventType,
+    }),
+  }).catch(() => {});
 }
